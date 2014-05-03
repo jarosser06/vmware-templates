@@ -1,0 +1,80 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+        "<esc><wait>",
+        "<esc><wait>",
+        "<enter><wait>",
+        "/install/vmlinuz<wait>",
+        " auto<wait>",
+        " console-setup/ask_detect=false<wait>",
+        " console-setup/layoutcode=us<wait>",
+        " console-setup/modelcode=pc105<wait>",
+        " debconf/frontend=noninteractive<wait>",
+        " debian-installer=en_US<wait>",
+        " fb=false<wait>",
+        " initrd=/install/initrd.gz<wait>",
+        " kbd-chooser/method=us<wait>",
+        " keyboard-configuration/layout=USA<wait>",
+        " keyboard-configuration/variant=USA<wait>",
+        " locale=en_US<wait>",
+        " netcfg/get_domain=vm<wait>",
+        " netcfg/get_hostname=tamu-ubuntu<wait>",
+        " noapic<wait>",
+        " preseed/url=http://{{user `http`}}/ubuntu-12.04/preseed.cfg<wait>",
+        " -- <wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": 16384,
+      "guest_os_type": "ubuntu-64",
+      "iso_checksum": "b802bb065df98c0530d782eb94778c2da19e10d6",
+      "iso_checksum_type": "sha1",
+      "iso_url": "{{user `mirror`}}/12.04/ubuntu-12.04.4-server-amd64.iso",
+      "output_directory": "packer-ubuntu-12.04-amd64-vmware",
+      "shutdown_command": "echo 'aggieops'|sudo -S shutdown -P now",
+      "ssh_password": "aggieops",
+      "ssh_port": 22,
+      "ssh_username": "aggieops",
+      "ssh_wait_timeout": "10000s",
+      "tools_upload_flavor": "linux",
+      "type": "vmware-iso",
+      "vm_name": "packer-ubuntu-12.04-amd64",
+      "vmx_data": {
+        "cpuid.coresPerSocket": "1",
+        "memsize": "1024",
+        "ethernet0.virtualDev": "vmxnet3",
+        "numvcpus": "1"
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "target": "../builds/tamu_ubuntu-12.04-amd64.ova",
+      "format": "ova",
+      "type": "ovftool"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "VMWARE_TOOLS_HOST={{user `http`}}"
+      ],
+      "execute_command": "echo 'aggieops' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "scripts": [
+        "scripts/ubuntu/update.sh",
+        "scripts/common/sshd.sh",
+        "scripts/ubuntu/networking.sh",
+        "scripts/ubuntu/sudoers.sh",
+        "scripts/common/vmtools.sh",
+        "scripts/ubuntu/cleanup.sh",
+        "scripts/common/minimize.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "http": "localhost",
+    "mirror": "http://releases.ubuntu.com"
+  }
+}

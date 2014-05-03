@@ -1,0 +1,64 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+        "<esc><enter><wait>",
+        "linux netdevice=eth0 netsetup=dhcp install=cd:/<wait>",
+        " lang=en_US autoyast=http://{{user `http`}}/sles-11/sles-11-sp3-x86_64-autoinst.xml",
+        " textmode=1<wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": 16384,
+      "guest_os_type": "sles11-64",
+      "http_directory": "http",
+      "iso_checksum_type": "none",
+      "iso_url": "{{user `mirror`}}/SLES-11-SP3-DVD-x86_64-GM-DVD1.iso",
+      "output_directory": "packer-sles11sp3-x86_64-vmware",
+      "shutdown_command": "echo 'aggieops'|sudo -S /sbin/halt -h -p",
+      "ssh_password": "aggieops",
+      "ssh_port": 22,
+      "ssh_username": "aggieops",
+      "ssh_wait_timeout": "10000s",
+      "tools_upload_flavor": "linux",
+      "type": "vmware-iso",
+      "vm_name": "tamu-sles11sp3-x86_64",
+      "vmx_data": {
+        "cpuid.coresPerSocket": "1",
+        "memsize": "1024",
+        "ethernet0.virtualDev": "vmxnet3",
+        "numvcpus": "1"
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "target": "../builds/tamu_sles-11sp3.ova",
+      "format": "ova",
+      "type": "ovftool"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "VMWARE_TOOLS_HOST={{user `http`}}"
+      ],
+      "execute_command": "echo 'aggieops' | {{.Vars}} sudo -S -E sh '{{.Path}}'",
+      "scripts": [
+        "scripts/common/sshd.sh",
+        "scripts/common/vmtools.sh",
+        "scripts/sles/sudoers.sh",
+        "scripts/sles/zypper-locks.sh",
+        "scripts/sles/remove-dvd-source.sh",
+        "scripts/sles/cleanup.sh",
+        "scripts/common/minimize.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "http": "localhost",
+    "mirror": "http://cdn2.novell.com/prot/Q_VbW21BiB4~"
+  }
+}
+
