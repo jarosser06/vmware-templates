@@ -26,7 +26,7 @@
         "<enter><wait>"
       ],
       "boot_wait": "10s",
-      "disk_size": 16384,
+      "disk_size": "{{user `hdd`}}",
       "guest_os_type": "ubuntu-64",
       "iso_checksum": "b802bb065df98c0530d782eb94778c2da19e10d6",
       "iso_checksum_type": "sha1",
@@ -39,10 +39,10 @@
       "ssh_wait_timeout": "10000s",
       "tools_upload_flavor": "linux",
       "type": "vmware-iso",
-      "vm_name": "packer-ubuntu-12.04-amd64",
+      "vm_name": "tamu-{{user `size`}}-ubuntu-12.04-amd64",
       "vmx_data": {
         "cpuid.coresPerSocket": "1",
-        "memsize": "1024",
+        "memsize": "{{user `memory`}}",
         "ethernet0.virtualDev": "vmxnet3",
         "numvcpus": "1"
       }
@@ -50,7 +50,7 @@
   ],
   "post-processors": [
     {
-      "target": "../builds/tamu_ubuntu-12.04-amd64.ova",
+      "target": "../builds/tamu-{{user `size`}}-ubuntu-12.04-amd64.ova",
       "format": "ova",
       "type": "ovftool"
     }
@@ -75,6 +75,9 @@
   ],
   "variables": {
     "http": "localhost",
+    "memory": "1024",
+    "size": "standard",
+    "hdd": 16384,
     "mirror": "http://releases.ubuntu.com"
   }
 }

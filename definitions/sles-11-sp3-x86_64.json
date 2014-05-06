@@ -9,7 +9,7 @@
         "<enter><wait>"
       ],
       "boot_wait": "10s",
-      "disk_size": 16384,
+      "disk_size": "{{user `hdd`}}",
       "guest_os_type": "sles11-64",
       "http_directory": "http",
       "iso_checksum_type": "none",
@@ -22,10 +22,10 @@
       "ssh_wait_timeout": "10000s",
       "tools_upload_flavor": "linux",
       "type": "vmware-iso",
-      "vm_name": "tamu-sles11sp3-x86_64",
+      "vm_name": "tamu-{{user `size`}}-sles11sp3-x86_64",
       "vmx_data": {
         "cpuid.coresPerSocket": "1",
-        "memsize": "1024",
+        "memsize": "{{user `memory`}}",
         "ethernet0.virtualDev": "vmxnet3",
         "numvcpus": "1"
       }
@@ -33,7 +33,7 @@
   ],
   "post-processors": [
     {
-      "target": "../builds/tamu_sles-11sp3.ova",
+      "target": "../builds/tamu-{{user `size`}}-sles-11sp3.ova",
       "format": "ova",
       "type": "ovftool"
     }
@@ -58,6 +58,9 @@
   ],
   "variables": {
     "http": "localhost",
+    "memory": "1024",
+    "size": "standard",
+    "hdd": 16384,
     "mirror": "http://cdn2.novell.com/prot/Q_VbW21BiB4~"
   }
 }
