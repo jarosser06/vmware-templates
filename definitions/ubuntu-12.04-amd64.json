@@ -75,7 +75,7 @@
   ],
   "variables": {
     "http": "localhost",
-    "memory": "1024",
+    "memory": "4096",
     "size": "standard",
     "hdd": 16384,
     "mirror": "http://releases.ubuntu.com"
